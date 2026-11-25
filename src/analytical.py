@@ -1,11 +1,4 @@
-"""Black-Scholes Greeks via closed-form formulas.
-
-These are the reference values against which we validate the numerical
-methods. Each formula is a direct partial derivative of the BS price
-with respect to the corresponding input.
-
-Run `python -m src.analytical` for a demo.
-"""
+"Black-Scholes Greeks via closed-form formulas."
 
 from __future__ import annotations
 
@@ -20,8 +13,9 @@ def _d1d2(S: float, K: float, T: float, r: float, sigma: float):
     return d1, d2
 
 
-def bs_price(S: float, K: float, T: float, r: float, sigma: float,
-             option_type: str = "call") -> float:
+def bs_price(
+    S: float, K: float, T: float, r: float, sigma: float, option_type: str = "call"
+) -> float:
     """Black-Scholes price. Included here so analytical.py is self-contained."""
     if T <= 0 or sigma <= 0:
         if option_type == "call":
@@ -33,8 +27,9 @@ def bs_price(S: float, K: float, T: float, r: float, sigma: float,
     return float(K * np.exp(-r * T) * norm.cdf(-d2) - S * norm.cdf(-d1))
 
 
-def delta(S: float, K: float, T: float, r: float, sigma: float,
-          option_type: str = "call") -> float:
+def delta(
+    S: float, K: float, T: float, r: float, sigma: float, option_type: str = "call"
+) -> float:
     """Delta = dP/dS."""
     d1, _ = _d1d2(S, K, T, r, sigma)
     if option_type == "call":
@@ -54,8 +49,9 @@ def vega(S: float, K: float, T: float, r: float, sigma: float) -> float:
     return float(S * np.sqrt(T) * norm.pdf(d1))
 
 
-def theta(S: float, K: float, T: float, r: float, sigma: float,
-          option_type: str = "call") -> float:
+def theta(
+    S: float, K: float, T: float, r: float, sigma: float, option_type: str = "call"
+) -> float:
     """Theta = -dP/dT (negative because options lose value as T decreases).
 
     Convention: theta is per year. Divide by 252 for per-trading-day theta.
@@ -69,8 +65,9 @@ def theta(S: float, K: float, T: float, r: float, sigma: float,
     return float(term1 + term2)
 
 
-def rho(S: float, K: float, T: float, r: float, sigma: float,
-        option_type: str = "call") -> float:
+def rho(
+    S: float, K: float, T: float, r: float, sigma: float, option_type: str = "call"
+) -> float:
     """Rho = dP/dr."""
     _, d2 = _d1d2(S, K, T, r, sigma)
     if option_type == "call":
@@ -78,8 +75,9 @@ def rho(S: float, K: float, T: float, r: float, sigma: float,
     return float(-K * T * np.exp(-r * T) * norm.cdf(-d2))
 
 
-def all_greeks(S: float, K: float, T: float, r: float, sigma: float,
-               option_type: str = "call") -> dict:
+def all_greeks(
+    S: float, K: float, T: float, r: float, sigma: float, option_type: str = "call"
+) -> dict:
     """Compute all five Greeks at once."""
     return {
         "delta": delta(S, K, T, r, sigma, option_type),

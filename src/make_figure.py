@@ -1,10 +1,8 @@
-"""Generate figures for the README.
-
-Figure 1: Delta, gamma, vega as functions of spot price.
-Figure 2: Finite-difference error as a function of epsilon (the bias-variance tradeoff).
-"""
+"Generate figures for the README."
 
 from __future__ import annotations
+
+from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -42,23 +40,17 @@ def figure_greeks_vs_spot() -> None:
     axes[2].axvline(K, color="gray", linestyle="--", alpha=0.5)
     axes[2].grid(True, alpha=0.3)
 
-    fig.suptitle("Black-Scholes Greeks vs Spot Price (ATM call, K=100, T=1, σ=20%)",
-                 fontsize=12)
+    fig.suptitle(
+        "Black-Scholes Greeks vs Spot Price (ATM call, K=100, T=1, σ=20%)", fontsize=12
+    )
     fig.tight_layout()
-    fig.savefig("figures/greeks_vs_spot.png", dpi=120)
-    print("Saved figures/greeks_vs_spot.png")
+    Path("assets").mkdir(exist_ok=True)
+    fig.savefig("assets/greeks_vs_spot.png", dpi=120)
+    print("Saved assets/greeks_vs_spot.png")
 
 
 def figure_fd_epsilon_tradeoff() -> None:
-    """Show how finite-difference error varies with epsilon.
-
-    Too large: truncation error dominates (the FD approximation is wrong).
-    Too small: floating-point cancellation dominates (subtracting nearly
-    equal prices loses significant digits).
-
-    The optimal epsilon balances both. For delta with central differences,
-    it's typically around 1e-4 to 1e-2.
-    """
+    "Show how finite-difference error varies with epsilon."
     S, K, T, r, sigma = 100, 100, 1.0, 0.05, 0.2
     true_delta = delta(S, K, T, r, sigma, "call")
 
@@ -74,15 +66,22 @@ def figure_fd_epsilon_tradeoff() -> None:
     ax.loglog(epsilons, errors, "o-", markersize=3)
     ax.set_xlabel("ε (bump size)")
     ax.set_ylabel("|FD delta − analytical delta|")
-    ax.set_title("The finite-difference bias-variance tradeoff")
-    ax.annotate("← cancellation\n    noise", xy=(1e-11, errors[5]),
-                fontsize=10, color="red")
-    ax.annotate("truncation →\nerror", xy=(1e-1, errors[-5]),
-                fontsize=10, color="red", ha="right")
+    ax.set_title("Finite-difference truncation and floating-point cancellation")
+    ax.annotate(
+        "← cancellation\n    noise", xy=(1e-11, errors[5]), fontsize=10, color="red"
+    )
+    ax.annotate(
+        "truncation →\nerror",
+        xy=(1e-1, errors[-5]),
+        fontsize=10,
+        color="red",
+        ha="right",
+    )
     ax.grid(True, which="both", alpha=0.3)
     fig.tight_layout()
-    fig.savefig("figures/fd_epsilon_tradeoff.png", dpi=120)
-    print("Saved figures/fd_epsilon_tradeoff.png")
+    Path("assets").mkdir(exist_ok=True)
+    fig.savefig("assets/results.png", dpi=120)
+    print("Saved assets/results.png")
 
 
 if __name__ == "__main__":
