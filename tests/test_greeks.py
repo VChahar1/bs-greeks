@@ -1,9 +1,5 @@
-"""Tests for the Greeks implementations.
+"Tests for the Greeks implementations."
 
-The strategy: compute each Greek via all three methods, check they agree.
-Analytical is the reference; FD and autograd must match within tolerances
-appropriate to each method.
-"""
 from __future__ import annotations
 
 import pytest
@@ -13,10 +9,8 @@ from src.finitediff import all_greeks_fd
 from src.pathwise import all_greeks_autograd
 
 
-PARAMS = (100, 100, 1.0, 0.05, 0.2)   # S, K, T, r, sigma
+PARAMS = (100, 100, 1.0, 0.05, 0.2)
 
-
-# ---- Analytical sanity checks ----
 
 def test_call_delta_between_0_and_1():
     d = delta(*PARAMS, "call")
@@ -48,33 +42,27 @@ def test_theta_negative_for_call():
     assert theta(*PARAMS, "call") < 0
 
 
-# ---- Finite-difference cross-validation ----
-
 @pytest.mark.parametrize("greek", ["delta", "gamma", "vega", "theta", "rho"])
 def test_fd_matches_analytical(greek):
     ana = all_greeks(*PARAMS, "call")
     fd = all_greeks_fd(*PARAMS, "call")
-    # FD tolerance is looser because of truncation error.
+
     tol = 0.01 if greek == "theta" else 0.001
     assert abs(fd[greek] - ana[greek]) < tol, (
         f"{greek}: FD={fd[greek]:.6f} vs analytical={ana[greek]:.6f}"
     )
 
 
-# ---- Autograd cross-validation ----
-
 @pytest.mark.parametrize("greek", ["delta", "gamma", "vega", "theta", "rho"])
 def test_autograd_matches_analytical(greek):
     ana = all_greeks(*PARAMS, "call")
     ad = all_greeks_autograd(*PARAMS, "call")
-    # Autograd should be exact to ~machine precision.
+
     tol = 1e-6
     assert abs(ad[greek] - ana[greek]) < tol, (
         f"{greek}: autograd={ad[greek]:.6f} vs analytical={ana[greek]:.6f}"
     )
 
-
-# ---- Edge cases ----
 
 def test_deep_itm_call_delta_near_one():
     d = delta(200, 100, 1.0, 0.05, 0.2, "call")
