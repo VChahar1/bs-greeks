@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -42,8 +44,9 @@ def figure_greeks_vs_spot() -> None:
         "Black-Scholes Greeks vs Spot Price (ATM call, K=100, T=1, σ=20%)", fontsize=12
     )
     fig.tight_layout()
-    fig.savefig("figures/greeks_vs_spot.png", dpi=120)
-    print("Saved figures/greeks_vs_spot.png")
+    Path("assets").mkdir(exist_ok=True)
+    fig.savefig("assets/greeks_vs_spot.png", dpi=120)
+    print("Saved assets/greeks_vs_spot.png")
 
 
 def figure_fd_epsilon_tradeoff() -> None:
@@ -63,7 +66,7 @@ def figure_fd_epsilon_tradeoff() -> None:
     ax.loglog(epsilons, errors, "o-", markersize=3)
     ax.set_xlabel("ε (bump size)")
     ax.set_ylabel("|FD delta − analytical delta|")
-    ax.set_title("The finite-difference bias-variance tradeoff")
+    ax.set_title("Finite-difference truncation and floating-point cancellation")
     ax.annotate(
         "← cancellation\n    noise", xy=(1e-11, errors[5]), fontsize=10, color="red"
     )
@@ -76,8 +79,9 @@ def figure_fd_epsilon_tradeoff() -> None:
     )
     ax.grid(True, which="both", alpha=0.3)
     fig.tight_layout()
-    fig.savefig("figures/fd_epsilon_tradeoff.png", dpi=120)
-    print("Saved figures/fd_epsilon_tradeoff.png")
+    Path("assets").mkdir(exist_ok=True)
+    fig.savefig("assets/results.png", dpi=120)
+    print("Saved assets/results.png")
 
 
 if __name__ == "__main__":
